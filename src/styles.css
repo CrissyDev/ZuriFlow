@@ -1,1 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+    --primary-red: #d32f2f;      
+    --light-red-bg: #fff5f5;     
+    --white: #ffffff;
+    --text-dark: #1a1a1b;
+    --text-muted: #5f6368;
+    --bg-gray: #fcfcfc;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--white);
+    color: var(--text-dark);
+    line-height: 1.5;
+  }

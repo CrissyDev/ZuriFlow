@@ -1,0 +1,46 @@
+.how-it-works {
+    padding: 80px 10%;
+    text-align: center;
+    background-color: var(--white);
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 60px;
+  }
+  
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+  
+  .step-card {
+    text-align: center;
+  }
+  
+  /* Red circles replacing purple from image_2.png */
+  .step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-red);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0 auto 20px;
+  }
+  
+  .step-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+  }
+  
+  .step-card .meta {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }

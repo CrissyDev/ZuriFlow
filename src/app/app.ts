@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar'; 
 import { Home } from './home/home';
+import { HowItWorks } from './how-it-works/how-it-works';
+import { FinalCta } from './final-cta/final-cta';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +11,9 @@ import { Home } from './home/home';
   imports: [
     RouterOutlet, 
     Navbar, 
-    Home
+    Home,
+    HowItWorks,
+    FinalCta
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
