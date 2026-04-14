@@ -1,0 +1,122 @@
+.home-container {
+    padding: 0 8%;
+    background-color: var(--white-bg);
+    min-height: 80vh;
+  }
+  
+  /* --- Hero --- */
+  .hero {
+    text-align: center;
+    padding: 100px 0 60px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .hero h1 {
+    font-size: 3.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 25px;
+  }
+  
+  .text-highlight { color: var(--primary-red); }
+  
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--muted-text);
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto 50px;
+  }
+  
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .btn-ai-chat, .btn-learn-more {
+    padding: 16px 30px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    border: none;
+  }
+  
+  .btn-ai-chat {
+    background-color: var(--primary-red);
+    color: white;
+  }
+  
+  .btn-learn-more {
+    background-color: #f8f9fa;
+    color: var(--main-text);
+    border: 1px solid #ddd;
+  }
+  
+  /* --- Feature Cards & Hover --- */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding-bottom: 100px;
+  }
+  
+  .card {
+    background: var(--white-bg);
+    border: 1px solid #eee;
+    padding: 40px;
+    border-radius: 24px;
+    /* This transition handles the entire hover effect */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: default;
+  }
+  
+  /* THE EXACT HOVER EFFECT */
+  .card:hover {
+    transform: translateY(-12px); /* Lifts the card */
+    box-shadow: 0 20px 40px rgba(211, 47, 47, 0.12); /* A faint red shadow glow */
+    border-color: var(--primary-red);
+  }
+  
+  .icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+  }
+  
+  /* Icon Color Variations - Red Palette */
+  .icon-red { background-color: #ffebee; color: var(--primary-red); }
+  .icon-light-red { background-color: #fff5f5; color: var(--light-red-subtle); }
+  .icon-teal { background-color: var(--teal-card-subtle); color: #38b2ac; }
+  
+  .card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  
+  .card-meta {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 18px;
+    display: block;
+  }
+  
+  .card-desc {
+    color: var(--muted-text);
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+  
+  /* Responsive */
+  @media (max-width: 992px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2.8rem; }
+  }

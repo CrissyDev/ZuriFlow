@@ -1,0 +1,45 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 8%;
+    background-color: var(--white-bg);
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  /* Red placeholder logo block */
+  .logo-placeholder {
+    width: 32px;
+    height: 32px;
+    background-color: var(--primary-red);
+    border-radius: 8px;
+  }
+  
+  .brand-name {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--main-text);
+    letter-spacing: -0.5px;
+  }
+  
+  .btn-get-started {
+    background-color: var(--primary-red);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-get-started:hover {
+    background-color: #b71c1c; /* A slightly darker red on hover */
+  }
