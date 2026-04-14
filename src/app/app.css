@@ -1,0 +1,76 @@
+:root {
+    --red-main: #e53935;
+    --red-light: #ffebee;
+    --white: #ffffff;
+    --text-main: #333;
+    --text-muted: #777;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 10%;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .brand-name { font-weight: 800; font-size: 1.2rem; }
+ 
+  .hero { text-align: center; padding: 4rem 10%; }
+  .hero h1 { font-size: 3.2rem; margin-bottom: 1rem; }
+  .text-highlight { color: var(--red-main); }
+  
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 0 10% 4rem;
+  }
+  
+  .card {
+    padding: 2.5rem;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(229, 57, 53, 0.12);
+    border-color: var(--red-main);
+  }
+  
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .red-bg { background: var(--red-light); color: var(--red-main); }
+  .red-bg-alt { background: #fff5f5; color: #ff5252; }
+  .teal-bg { background: #e6fffa; color: #38b2ac; }
+  
+  .btn-primary {
+    background: var(--red-main);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .btn-outline {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 12px 24px;
+    border-radius: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
