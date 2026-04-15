@@ -6,7 +6,7 @@
         detects abnormalities and alerts you to potential health concerns.
       </p>
       <div class="hero-actions">
-        <button class="btn-ai-chat">
+        <button class="btn-ai-chat" (click)="openChat()">
           <i class="fa-solid fa-comment-dots"></i> Chat with AI Agent
         </button>
         <button class="btn-learn-more">Learn More</button>
@@ -42,3 +42,7 @@
       </div>
     </section>
   </div>
+
+  @if (isChatOpen()) {
+    <app-chat (close)="closeChat()"></app-chat>
+  }

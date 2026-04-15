@@ -6,6 +6,13 @@
   
   .tracker-header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
   .tracker-header p { color: var(--text-muted); margin-bottom: 30px; }
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
   
   /* Empty State Styles */
   .empty-state {
@@ -56,3 +63,4 @@
   
   /* Shared Button */
   .btn-primary { background: var(--primary-red); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .btn-secondary { background: white; color: var(--primary-red); border: 1px solid var(--primary-red); padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }

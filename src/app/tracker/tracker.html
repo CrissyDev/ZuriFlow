@@ -2,9 +2,14 @@
     <header class="tracker-header">
       <h1>Period Tracker</h1>
       <p>Log your menstrual cycle and let our AI detect any abnormalities in your pattern.</p>
-      <button class="btn-primary" (click)="showForm.set(true)" *ngIf="!showForm()">
-        <i class="fa-solid fa-plus"></i> Log Period
-      </button>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="openChat()">
+          <i class="fa-solid fa-comment-dots"></i> Ask AI
+        </button>
+        <button class="btn-primary" (click)="showForm.set(true)" *ngIf="!showForm()">
+          <i class="fa-solid fa-plus"></i> Log Period
+        </button>
+      </div>
     </header>
   
     <div class="empty-state" *ngIf="!showForm() && logs().length === 0">
@@ -67,4 +72,8 @@
           <span class="badge">{{log.intensity}}</span>
        </div>
     </div>
+
+    @if (isChatOpen()) {
+      <app-chat (close)="closeChat()"></app-chat>
+    }
   </div>
