@@ -1,0 +1,70 @@
+<div class="tracker-container">
+    <header class="tracker-header">
+      <h1>Period Tracker</h1>
+      <p>Log your menstrual cycle and let our AI detect any abnormalities in your pattern.</p>
+      <button class="btn-primary" (click)="showForm.set(true)" *ngIf="!showForm()">
+        <i class="fa-solid fa-plus"></i> Log Period
+      </button>
+    </header>
+  
+    <div class="empty-state" *ngIf="!showForm() && logs().length === 0">
+      <div class="empty-content">
+        <i class="fa-solid fa-calendar-days empty-icon"></i>
+        <p>No periods logged yet. Start tracking to help AI detect patterns and abnormalities.</p>
+        <button class="btn-primary" (click)="showForm.set(true)">Log Your First Period</button>
+      </div>
+    </div>
+  
+    <div class="log-card" *ngIf="showForm()">
+      <h3>Log Your Period</h3>
+      <p class="form-subtitle">Record your menstrual cycle information</p>
+  
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Start Date *</label>
+          <input type="date" #startDate />
+        </div>
+        <div class="input-group">
+          <label>End Date</label>
+          <input type="date" #endDate />
+        </div>
+      </div>
+  
+      <div class="intensity-section">
+        <label>Flow Intensity</label>
+        <div class="chip-group">
+          <button class="chip" (click)="intensity.set('Light')" [class.active]="intensity() === 'Light'">Light</button>
+          <button class="chip active-red" (click)="intensity.set('Normal')" [class.active]="intensity() === 'Normal'">Normal</button>
+          <button class="chip" (click)="intensity.set('Heavy')" [class.active]="intensity() === 'Heavy'">Heavy</button>
+        </div>
+      </div>
+  
+      <div class="symptoms-section">
+        <label>Symptoms</label>
+        <div class="chip-group">
+          @for (symptom of symptomsList; track symptom) {
+            <button class="chip" (click)="toggleSymptom(symptom)" [class.active]="selectedSymptoms().includes(symptom)">
+              {{ symptom }}
+            </button>
+          }
+        </div>
+      </div>
+  
+      <div class="notes-section">
+        <label>Additional Notes</label>
+        <textarea placeholder="Any other observations or notes..." #notes></textarea>
+      </div>
+  
+      <div class="form-actions">
+        <button class="btn-save" (click)="saveEntry(startDate.value, endDate.value, notes.value)">Save Entry</button>
+        <button class="btn-cancel" (click)="showForm.set(false)">Cancel</button>
+      </div>
+    </div>
+  
+    <div class="logs-list" *ngIf="logs().length > 0 && !showForm()">
+       <div class="log-entry" *ngFor="let log of logs()">
+          <span><strong>{{log.start}}</strong> to <strong>{{log.end}}</strong></span>
+          <span class="badge">{{log.intensity}}</span>
+       </div>
+    </div>
+  </div>
