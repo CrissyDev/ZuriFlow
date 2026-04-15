@@ -13,6 +13,19 @@
   gap: 12px;
   margin-bottom: 8px;
 }
+
+.auth-state {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+}
+
+.auth-loading {
+  font-size: 0.9rem;
+}
   
   /* Empty State Styles */
   .empty-state {
@@ -64,3 +77,4 @@
   /* Shared Button */
   .btn-primary { background: var(--primary-red); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }
   .btn-secondary { background: white; color: var(--primary-red); border: 1px solid var(--primary-red); padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }

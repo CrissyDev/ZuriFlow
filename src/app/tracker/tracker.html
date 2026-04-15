@@ -2,11 +2,21 @@
     <header class="tracker-header">
       <h1>Period Tracker</h1>
       <p>Log your menstrual cycle and let our AI detect any abnormalities in your pattern.</p>
+      <div class="auth-state">
+        <span>{{ authNotice() }}</span>
+        @if (authState.isLoading()) {
+          <span class="auth-loading">Checking session...</span>
+        } @else if (!authState.isAuthenticated()) {
+          <button class="btn-secondary" (click)="signIn()">Sign In</button>
+        } @else {
+          <button class="btn-secondary" (click)="signOut()">Sign Out</button>
+        }
+      </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="openChat()">
           <i class="fa-solid fa-comment-dots"></i> Ask AI
         </button>
-        <button class="btn-primary" (click)="showForm.set(true)" *ngIf="!showForm()">
+        <button class="btn-primary" (click)="showForm.set(true)" *ngIf="!showForm()" [disabled]="!authState.isAuthenticated()">
           <i class="fa-solid fa-plus"></i> Log Period
         </button>
       </div>
@@ -15,8 +25,13 @@
     <div class="empty-state" *ngIf="!showForm() && logs().length === 0">
       <div class="empty-content">
         <i class="fa-solid fa-calendar-days empty-icon"></i>
-        <p>No periods logged yet. Start tracking to help AI detect patterns and abnormalities.</p>
-        <button class="btn-primary" (click)="showForm.set(true)">Log Your First Period</button>
+        @if (!authState.isAuthenticated()) {
+          <p>Please sign in to start your private period history.</p>
+          <button class="btn-primary" (click)="signIn()">Sign In to Continue</button>
+        } @else {
+          <p>No periods logged yet. Start tracking to help AI detect patterns and abnormalities.</p>
+          <button class="btn-primary" (click)="showForm.set(true)">Log Your First Period</button>
+        }
       </div>
     </div>
   
