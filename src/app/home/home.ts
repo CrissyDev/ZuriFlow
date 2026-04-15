@@ -15,8 +15,13 @@ import { Chat } from '../chat/chat';
   styleUrl: './home.css',
 })
 export class Home {
-  isChatOpen = signal(false);
-  toggleChat() {
-    this.isChatOpen.update(val => !val);
+  isChatOpen = signal(false)
+
+  openChat () {
+    this.isChatOpen.set(true)
+  }
+
+  closeChat () {
+    this.isChatOpen.set(false)
   }
 }
