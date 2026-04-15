@@ -1,1 +1,51 @@
-<p>chat works!</p>
+<div class="chat-backdrop" (click)="closeChat()">
+  <section class="chat-panel" (click)="$event.stopPropagation()">
+    <header class="chat-header">
+      <div>
+        <h2>Zuri AI Assistant</h2>
+        <p>Cycle insights, symptom guidance, and supportive advice</p>
+      </div>
+
+      <div class="chat-actions">
+        <button type="button" class="ghost-btn" (click)="startNewChat()">New Chat</button>
+        <button type="button" class="ghost-btn" (click)="closeChat()">Close</button>
+      </div>
+    </header>
+
+    <div class="chat-messages">
+      @if (aiService.messages().length === 0) {
+        <div class="empty-state">
+          <p>Hi, I am Zuri. Ask me about your cycle trends, symptoms, or period wellness tips.</p>
+        </div>
+      } @else {
+        @for (message of aiService.messages(); track $index) {
+          <article class="message" [class.assistant]="isAssistantMessage(message.role)">
+            <span class="role">{{ isAssistantMessage(message.role) ? 'Zuri' : 'You' }}</span>
+            <p class="message-text">{{ formatMessageText(message.text, message.role) }}</p>
+          </article>
+        }
+      }
+
+      @if (aiService.isLoading()) {
+        <div class="loading-state">Zuri is thinking...</div>
+      }
+    </div>
+
+    <form class="chat-input" (submit)="$event.preventDefault()">
+      <input
+        #messageInput
+        type="text"
+        placeholder="Ask a question about your period or symptoms..."
+        [disabled]="aiService.isLoading()"
+        (keydown.enter)="sendMessage(messageInput.value, messageInput)"
+      />
+      <button
+        type="button"
+        [disabled]="aiService.isLoading()"
+        (click)="sendMessage(messageInput.value, messageInput)"
+      >
+        Send
+      </button>
+    </form>
+  </section>
+</div>
