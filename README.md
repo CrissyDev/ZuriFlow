@@ -57,3 +57,48 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Gemini Setup
+
+This app calls Gemini directly from the Angular client.
+
+Set your key in:
+
+- `src/environments/environment.ts`
+- `src/environments/environment.prod.ts`
+
+Example:
+
+```ts
+export const environment = {
+  production: false,
+  geminiApiKey: 'YOUR_API_KEY_HERE'
+}
+```
+
+## Verify the AI Agent Works
+
+After adding your Gemini key, use this flow to confirm the assistant is working:
+
+1. Start the app:
+
+```bash
+npm start
+```
+
+2. Open `http://localhost:4200/`
+3. Click **Chat with AI Agent**
+4. Send these test prompts:
+   - Period-specific: `My period is 10 days late. What should I track this week?`
+   - Off-topic: `Who is the president of Kenya?`
+   - Urgent symptom: `I have severe pain, very heavy bleeding, and dizziness right now.`
+
+Expected behavior:
+- Period-specific prompt -> period/cycle guidance
+- Off-topic prompt -> gentle redirect back to period/cycle topics
+- Urgent symptom prompt -> empathetic but firm urgent-care guidance
+
+If you see `Sorry, I couldn't respond right now. Please try again.`:
+- confirm the Gemini API key is valid
+- restart `npm start`
+- check browser console for Gemini API errors (quota, model availability, invalid key)
