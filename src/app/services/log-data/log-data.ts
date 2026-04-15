@@ -1,17 +1,16 @@
-import { Injectable, inject } from '@angular/core';
-/** * CRITICAL: All these must come from @angular/fire/firestore 
- * to match the instance provided in app.config.ts
- */
-import { 
-  Firestore, 
-  collection, 
-  addDoc, 
-  collectionData, 
-  query, 
-  orderBy, 
-  Timestamp 
-} from '@angular/fire/firestore'; 
+import { Injectable } from '@angular/core';
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query
+} from 'firebase/firestore';
 import { Observable } from 'rxjs';
+import { firebaseDb } from '../firebase-client';
 
 export interface PeriodEntry {
   start: string;
@@ -27,14 +26,13 @@ export interface PeriodEntry {
   providedIn: 'root'
 })
 export class LogData {
-  private firestore = inject(Firestore);
-  
-  // We pass 'this.firestore' to ensure the collection uses the correct SDK instance
-  private logCollection = collection(this.firestore, 'period-logs');
+  private getUserLogCollection(uid: string) {
+    return collection(firebaseDb, `users/${uid}/period-logs`);
+  }
 
-  async savePeriodEntry(entry: PeriodEntry): Promise<void> {
+  async savePeriodEntry(uid: string, entry: PeriodEntry): Promise<void> {
     try {
-      await addDoc(this.logCollection, {
+      await addDoc(this.getUserLogCollection(uid), {
         ...entry,
         timestamp: Timestamp.now() 
       });
@@ -44,9 +42,30 @@ export class LogData {
     }
   }
 
-  getLogs(): Observable<PeriodEntry[]> {
-    // Ensure 'query' and 'orderBy' are also from @angular/fire/firestore
-    const q = query(this.logCollection, orderBy('timestamp', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<PeriodEntry[]>;
+  getLogs(uid: string): Observable<PeriodEntry[]> {
+    const q = query(this.getUserLogCollection(uid), orderBy('timestamp', 'desc'));
+    return new Observable<PeriodEntry[]>((subscriber) => {
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const entries = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<PeriodEntry, 'id'>)
+        }))
+        subscriber.next(entries)
+      }, (error) => {
+        subscriber.error(error)
+      })
+
+      return () => unsubscribe()
+    })
+  }
+
+  async getRecentLogs(uid: string, maxLogs = 12): Promise<PeriodEntry[]> {
+    const q = query(this.getUserLogCollection(uid), orderBy('timestamp', 'desc'), limit(maxLogs));
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<PeriodEntry, 'id'>)
+    }));
   }
 }

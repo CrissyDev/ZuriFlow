@@ -1,6 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { environment } from '../../../environments/environment';
+import { PeriodEntry, LogData } from '../log-data/log-data';
+import { AuthState } from '../auth-state/auth-state';
 
 type ChatRole = 'user' | 'assistant'
 
@@ -54,6 +56,16 @@ const URGENT_KEYWORDS = [
 
 const GENERIC_ERROR_MESSAGE = "Sorry, I couldn't respond right now. Please try again."
 const DOMAIN_REDIRECT_MESSAGE = 'I can best help with period and cycle health. I cannot help with unrelated topics, but I can help you track missed periods, cramps, flow changes, or PCOS questions.'
+const PERSONALIZATION_ERROR_CONTEXT = 'User data could not be loaded for this answer.'
+const DAY_IN_MS = 24 * 60 * 60 * 1000
+
+export type CycleSummary = {
+  totalLogs: number,
+  averageCycleLengthDays: number | null,
+  recentIntensity: string[],
+  topSymptoms: string[],
+  hasEnoughData: boolean
+}
 
 export function isPeriodDomainPrompt (text: string) {
   const normalized = text.toLowerCase()
@@ -96,10 +108,113 @@ export function applyResponseGuardrail (responseText: string, prompt: string) {
   return `I am sorry you are going through this. Because your symptoms may be serious, please seek urgent in-person medical care now. ${cleanText}`
 }
 
+function parseDateOrNull (value: string) {
+  if (!value) {
+    return null
+  }
+
+  const parsedDate = new Date(value)
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null
+  }
+
+  return parsedDate
+}
+
+export function buildCycleSummary (logs: PeriodEntry[]): CycleSummary {
+  if (logs.length === 0) {
+    return {
+      totalLogs: 0,
+      averageCycleLengthDays: null,
+      recentIntensity: [],
+      topSymptoms: [],
+      hasEnoughData: false
+    }
+  }
+
+  const entriesWithValidStart = logs
+    .map((entry) => ({ ...entry, startDate: parseDateOrNull(entry.start) }))
+    .filter((entry) => entry.startDate !== null)
+    .sort((a, b) => (a.startDate?.getTime() ?? 0) - (b.startDate?.getTime() ?? 0))
+
+  const cycleLengths = entriesWithValidStart
+    .slice(1)
+    .map((entry, index) => {
+      const previous = entriesWithValidStart[index].startDate
+      const current = entry.startDate
+      if (!previous || !current) {
+        return null
+      }
+
+      return Math.round((current.getTime() - previous.getTime()) / DAY_IN_MS)
+    })
+    .filter((length): length is number => length !== null && length > 0 && length < 90)
+
+  const averageCycleLengthDays = cycleLengths.length > 0
+    ? Math.round(cycleLengths.reduce((sum, length) => sum + length, 0) / cycleLengths.length)
+    : null
+
+  const symptomFrequency = logs
+    .flatMap((entry) => entry.symptoms || [])
+    .reduce<Record<string, number>>((counts, symptom) => {
+      counts[symptom] = (counts[symptom] || 0) + 1
+      return counts
+    }, {})
+
+  const topSymptoms = Object.entries(symptomFrequency)
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 3)
+    .map(([symptom]) => symptom)
+
+  const recentIntensity = logs
+    .slice(0, 3)
+    .map((entry) => entry.intensity)
+    .filter(Boolean)
+
+  return {
+    totalLogs: logs.length,
+    averageCycleLengthDays,
+    recentIntensity,
+    topSymptoms,
+    hasEnoughData: logs.length >= 2
+  }
+}
+
+export function buildAdviceContext (prompt: string, summary: CycleSummary) {
+  const averageCycleLength = summary.averageCycleLengthDays === null
+    ? 'Not enough data'
+    : `${summary.averageCycleLengthDays} days`
+
+  const topSymptoms = summary.topSymptoms.length === 0
+    ? 'No symptom trend yet'
+    : summary.topSymptoms.join(', ')
+
+  const recentIntensity = summary.recentIntensity.length === 0
+    ? 'No intensity trend yet'
+    : summary.recentIntensity.join(', ')
+
+  const dataConfidence = summary.hasEnoughData
+    ? 'Use the summary to personalize recommendations.'
+    : 'The dataset is limited. Give cautious advice and ask one clarifying question.'
+
+  return [
+    'Use the following private tracker summary for personalization when relevant:',
+    `- Total logs: ${summary.totalLogs}`,
+    `- Average cycle length: ${averageCycleLength}`,
+    `- Recent intensity: ${recentIntensity}`,
+    `- Top symptoms: ${topSymptoms}`,
+    `- Data quality note: ${dataConfidence}`,
+    '',
+    `User question: ${prompt}`
+  ].join('\n')
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class Ai {
+  private logService = inject(LogData)
+  private authState = inject(AuthState)
   private genAI = new GoogleGenerativeAI(environment.geminiApiKey)
   private model = this.genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
@@ -138,7 +253,8 @@ export class Ai {
           temperature: 0.4
         }
       })
-      const result = await chat.sendMessage(normalizedPrompt)
+      const contextualPrompt = await this.buildContextualPrompt(normalizedPrompt)
+      const result = await chat.sendMessage(contextualPrompt)
       const response = await result.response
       const assistantText = applyResponseGuardrail(response.text(), normalizedPrompt)
       if (!assistantText || assistantText === GENERIC_ERROR_MESSAGE) throw new Error('Assistant returned an empty response')
@@ -157,5 +273,21 @@ export class Ai {
 
   clearMessages () {
     this.messages.set([])
+  }
+
+  private async buildContextualPrompt (prompt: string) {
+    const uid = this.authState.uid()
+    if (!uid) {
+      return `${PERSONALIZATION_ERROR_CONTEXT}\nUser question: ${prompt}`
+    }
+
+    try {
+      const recentLogs = await this.logService.getRecentLogs(uid, 12)
+      const summary = buildCycleSummary(recentLogs)
+      return buildAdviceContext(prompt, summary)
+    } catch (error) {
+      console.error('Unable to load user logs for AI context:', error)
+      return `${PERSONALIZATION_ERROR_CONTEXT}\nUser question: ${prompt}`
+    }
   }
 }

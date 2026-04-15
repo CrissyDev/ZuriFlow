@@ -76,6 +76,20 @@ export const environment = {
 }
 ```
 
+Important:
+- This keeps iteration fast, but it means the Gemini API key is exposed in the browser bundle.
+- Use strict key restrictions, quotas, and regular key rotation for safety.
+
+## Firebase Auth + Private Logs
+
+This app now requires Firebase authentication to save or sync period data.
+
+- Logs are stored per user in `users/{uid}/period-logs`
+- Tracker reads/writes are blocked until sign-in completes
+- Chat personalization uses the signed-in user's most recent logs
+
+If no session exists, use the tracker **Sign In** button to create a session and unlock private logging.
+
 ## Verify the AI Agent Works
 
 After adding your Gemini key, use this flow to confirm the assistant is working:
@@ -97,6 +111,7 @@ Expected behavior:
 - Period-specific prompt -> period/cycle guidance
 - Off-topic prompt -> gentle redirect back to period/cycle topics
 - Urgent symptom prompt -> empathetic but firm urgent-care guidance
+- Signed-in user prompt -> advice personalized from `users/{uid}/period-logs`
 
 If you see `Sorry, I couldn't respond right now. Please try again.`:
 - confirm the Gemini API key is valid
@@ -174,4 +189,10 @@ const newEntry = {
   intensity: this.intensity(),
   symptoms: this.selectedSymptoms()
 }
+```
+
+Stored document path:
+
+```txt
+users/{uid}/period-logs/{docId}
 ```

@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  geminiApiKey: 'AIzaSyBT9U7YSjNWMjegNwEghsGJi1QvCojsers',
+  geminiApiKey: 'AIzaSyA_Dmjir4jMSsa0wadbqu-5idmd0zvyLrY',
   firebase: {
     apiKey: "AIzaSyChk-nf4FMcjqqPl-r9GpSLaB_-9sGI8C4",
     authDomain: "developer-cakes.firebaseapp.com",
